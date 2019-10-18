@@ -18,5 +18,5 @@ func uint2byte(a uint32) []byte {
 }
 
 func byte2uint(b []byte) uint32 {
-	return binary.BigEndian.Uint32(b)
+	return binary.LittleEndian.Uint32(b)
 }
