@@ -35,12 +35,15 @@ func Hander(conn redcon.Conn, cmd redcon.Command) {
 //StringDB string
 var StringDB *DB
 
-//StartServre 开始服务
-func StartServre(bindAddr string) {
-
+func init() {
 	StringDB = &DB{
 		Dict: make(map[string]ValueEntry),
 	}
+
+}
+
+//StartServre 开始服务
+func StartServre(bindAddr string) {
 
 	err := redcon.ListenAndServe(bindAddr,
 		Hander,
