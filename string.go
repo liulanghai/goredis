@@ -43,20 +43,6 @@ func (r RString) Get(db *DB, key string) (string, bool) {
 	return val.Val.(string), true
 }
 
-//Del  if key exist  return true
-func (r RString) Del(db *DB, key string) bool {
-	var exist bool
-	db.Mu.Lock()
-	defer db.Mu.Unlock() //TODO
-	_, ok := db.Dict[key]
-	if ok {
-		exist = true
-	}
-	delete(db.Dict, key)
-
-	return exist
-}
-
 //Do 处理相关的命令及数据返回
 func (r RString) Do(con redcon.Conn, cmd redcon.Command, d *DB) {
 	key := b2s(cmd.Args[1])
@@ -72,19 +58,14 @@ func (r RString) Do(con redcon.Conn, cmd redcon.Command, d *DB) {
 		} else {
 			con.WriteNull()
 		}
-	case "del":
-		exist := r.Del(d, key)
-		if exist {
-			con.WriteInt(1)
-		} else {
-			con.WriteInt(0)
-		}
+	default:
+		con.WriteError("ERR unknown command '" + string(cmd.Args[0]) + "'")
 	}
+	return
 }
 
 func init() {
 	var rs RString
 	registerCommand("set", rs)
 	registerCommand("get", rs)
-	registerCommand("del", rs)
 }
